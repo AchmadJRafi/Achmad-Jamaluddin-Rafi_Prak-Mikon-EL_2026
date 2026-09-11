@@ -1,23 +1,44 @@
 #include <Arduino.h>
 
 const int potPin = 34;
+const int buttonPin = 4;
+const int ledRed = 18;
+const int ledYellow = 19;
+const int ledGreen = 21;
 
 void setup() {
-  Serial.begin(115200);
-  delay(1000);
+  pinMode(buttonPin, INPUT_PULLUP);
+  pinMode(ledRed, OUTPUT);
+  pinMode(ledYellow, OUTPUT);
+  pinMode(ledGreen, OUTPUT);
 }
 
 void loop() {
-  int rawADC = analogRead(potPin);
+  int buttonState = digitalRead(buttonPin);
+  int potValue = analogRead(potPin);
 
-  float voltage = (rawADC / 4095.0) * 3.3;
-  float resistance = (rawADC / 4095.0) * 10000.0;
+  if (buttonState == LOW) {
+    digitalWrite(ledRed, LOW);
+    digitalWrite(ledYellow, LOW);
+    digitalWrite(ledGreen, LOW);
+  }
+  else {
+    if (potValue < 1365) {
+      digitalWrite(ledRed, HIGH);
+      digitalWrite(ledYellow, LOW);
+      digitalWrite(ledGreen, LOW);
+    }
+    else if (potValue >= 1365 && potValue < 2730) {
+      digitalWrite(ledRed, LOW);
+      digitalWrite(ledYellow, HIGH);
+      digitalWrite(ledGreen, LOW);
+    }
+    else {
+      digitalWrite(ledRed, LOW);
+      digitalWrite(ledYellow, LOW);
+      digitalWrite(ledGreen, HIGH);
+    }
+  }
 
-  Serial.print("Raw ADC: ");
-  Serial.print(rawADC);
-  Serial.print("\t | Tegangan: ");
-  Serial.print(voltage, 2);
-  Serial.print(" V\t | Hambatan: ");
-  Serial.print(resistance, 0);
-  Serial.println(" Ohm");
+  delay(100);
 }
